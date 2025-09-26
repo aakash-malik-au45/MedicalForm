@@ -153,95 +153,127 @@
   </main>
 
   <script>
-    // Form validation
-    document.getElementById('profileForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-      const requiredFields = this.querySelectorAll('input[required]');
-      let isValid = true;
-      requiredFields.forEach(field => {
-        if (!field.value.trim()) { isValid = false; field.style.borderColor = '#ef4444'; }
-        else { field.style.borderColor = '#999'; }
-      });
-      if (isValid) alert('Profile created successfully!');
-      else alert('Please fill in all required fields.');
-    });
+  // Form validation and submit handling
+  document.getElementById('profileForm').addEventListener('submit', function(e) {
+    e.preventDefault(); // Prevent page reload
 
-    function cancelForm() {
-      if (confirm('Are you sure you want to cancel?')) {
-        document.getElementById('profileForm').reset();
-        window.history.back();
+    const requiredFields = this.querySelectorAll('input[required]');
+    let isValid = true;
+
+    requiredFields.forEach(field => {
+      if (!field.value.trim()) {
+        isValid = false;
+        field.style.borderColor = '#ef4444';
+      } else {
+        field.style.borderColor = '#999';
       }
+    });
+
+    if (isValid) {
+      alert('Data updated successfully!');
+
+      // Reset all input fields and checkboxes
+      this.reset();
+
+      // Reset dropdown buttons manually
+      document.querySelectorAll('.dropdown-button').forEach(btn => {
+        const type = btn.getAttribute('data-dropdown');
+        btn.textContent = type === 'role' ? 'Select Role' : 'Select';
+        btn.classList.remove('has-value');
+        btn.classList.add('placeholder');
+      });
+    } else {
+      alert('Please fill in all required fields.');
     }
+  });
 
-    // Dropdown with groups
-    document.querySelectorAll('.dropdown').forEach(dropdown => {
-      const button = dropdown.querySelector('.dropdown-button');
-      const menu = dropdown.querySelector('.dropdown-menu');
+  // Cancel button function
+  function cancelForm() {
+    if (confirm('Are you sure you want to cancel?')) {
+      document.getElementById('profileForm').reset();
 
-      button.addEventListener('click', function(e) {
-        e.stopPropagation(); // prevent outside click
-        menu.classList.toggle('hidden');
-        menu.innerHTML = '';
-        const type = this.getAttribute('data-dropdown');
+      // Reset dropdown buttons manually
+      document.querySelectorAll('.dropdown-button').forEach(btn => {
+        const type = btn.getAttribute('data-dropdown');
+        btn.textContent = type === 'role' ? 'Select Role' : 'Select';
+        btn.classList.remove('has-value');
+        btn.classList.add('placeholder');
+      });
 
-        let options = [];
-        switch (type) {
-          case 'role':
-            options = [
-              { group: 'Specialist', items: ['Owner', 'Partner', 'Associate'] },
-              { group: 'Others', items: ['Hygienist', 'Practice Success Director', 'Strategic Growth Partner', 'Treatment Consultant', 'Custom Role'] }
-            ];
-            break;
-          case 'specialty':
-            options = [{ items: ['Periodontist', 'Endodontist', 'Oral Surgeon', 'Prosthodontist'] }];
-            break;
-          case 'location1':
-            options = [{ items: ['United States', 'Canada', 'United Kingdom', 'Australia'] }];
-            break;
-          case 'location2':
-            options = [{ items: ['New York', 'California', 'Texas', 'Florida'] }];
-            break;
+      window.history.back();
+    }
+  }
+
+  // Dropdown with groups
+  document.querySelectorAll('.dropdown').forEach(dropdown => {
+    const button = dropdown.querySelector('.dropdown-button');
+    const menu = dropdown.querySelector('.dropdown-menu');
+
+    button.addEventListener('click', function(e) {
+      e.stopPropagation(); // prevent outside click
+      menu.classList.toggle('hidden');
+      menu.innerHTML = '';
+      const type = this.getAttribute('data-dropdown');
+
+      let options = [];
+      switch (type) {
+        case 'role':
+          options = [
+            { group: 'Specialist', items: ['Owner', 'Partner', 'Associate'] },
+            { group: 'Others', items: ['Hygienist', 'Practice Success Director', 'Strategic Growth Partner', 'Treatment Consultant', 'Custom Role'] }
+          ];
+          break;
+        case 'specialty':
+          options = [{ items: ['Periodontist', 'Endodontist', 'Oral Surgeon', 'Prosthodontist'] }];
+          break;
+        case 'location1':
+          options = [{ items: ['United States', 'Canada', 'United Kingdom', 'Australia'] }];
+          break;
+        case 'location2':
+          options = [{ items: ['New York', 'California', 'Texas', 'Florida'] }];
+          break;
+      }
+
+      options.forEach(group => {
+        if (group.group) {
+          const header = document.createElement('li');
+          header.textContent = group.group;
+          header.classList.add('dropdown-header');
+          menu.appendChild(header);
+
+          group.items.forEach(item => {
+            const li = document.createElement('li');
+            li.textContent = item;
+            li.addEventListener('click', () => {
+              button.textContent = item;
+              button.classList.remove('placeholder');
+              button.classList.add('has-value');
+              menu.classList.add('hidden');
+            });
+            menu.appendChild(li);
+          });
+        } else {
+          group.items.forEach(item => {
+            const li = document.createElement('li');
+            li.textContent = item;
+            li.addEventListener('click', () => {
+              button.textContent = item;
+              button.classList.remove('placeholder');
+              button.classList.add('has-value');
+              menu.classList.add('hidden');
+            });
+            menu.appendChild(li);
+          });
         }
-
-        options.forEach(group => {
-          if (group.group) {
-            const header = document.createElement('li');
-            header.textContent = group.group;
-            header.classList.add('dropdown-header');
-            menu.appendChild(header);
-
-            group.items.forEach(item => {
-              const li = document.createElement('li');
-              li.textContent = item;
-              li.addEventListener('click', () => {
-                button.textContent = item;
-                button.classList.remove('placeholder');
-                button.classList.add('has-value');
-                menu.classList.add('hidden');
-              });
-              menu.appendChild(li);
-            });
-          } else {
-            group.items.forEach(item => {
-              const li = document.createElement('li');
-              li.textContent = item;
-              li.addEventListener('click', () => {
-                button.textContent = item;
-                button.classList.remove('placeholder');
-                button.classList.add('has-value');
-                menu.classList.add('hidden');
-              });
-              menu.appendChild(li);
-            });
-          }
-        });
       });
     });
+  });
 
-    // Close dropdown on outside click
-    document.addEventListener('click', function () {
-      document.querySelectorAll('.dropdown-menu').forEach(menu => menu.classList.add('hidden'));
-    });
-  </script>
+  // Close dropdown on outside click
+  document.addEventListener('click', function () {
+    document.querySelectorAll('.dropdown-menu').forEach(menu => menu.classList.add('hidden'));
+  });
+</script>
+
 </body>
 </html>

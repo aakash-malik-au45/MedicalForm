@@ -3,15 +3,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Create Profile | The Leadership Thread | Healthcare Professional Registration</title>
-  
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      font-family: 'Inter', sans-serif;
-      background-color: #ffffff;
-      min-height: 100vh;
-      line-height: 1.5;
-    }
+    body { font-family: 'Inter', sans-serif; background-color: #ffffff; min-height: 100vh; line-height: 1.5; }
     .main-container { display: flex; flex-direction: column; width: 100%; min-height: 100vh; gap: 28px; align-items: center; }
     .header { display: flex; justify-content: space-between; align-items: center; width: 100%; padding: 16px; }
     .header-logo { width: 120px; }
@@ -27,33 +21,34 @@
     .form-title h1 { font-size: 20px; font-weight: 600; }
     .form-sections { display: flex; flex-direction: column; gap: 24px; width: 100%; }
     .section-label { font-size: 14px; font-weight: 600; color: #c6b98b; margin-bottom: 8px; }
-    .form-row {display: flex;flex-direction: row;gap: 16px;width: 100%;}
-    @media (max-width: 600px) {
-  .form-row {
-    flex-direction: column;
-  }
-  .partner-logo{display:none;}
-}
+    .form-row { display: flex; flex-direction: row; gap: 16px; width: 100%; }
+    @media (max-width: 600px) { .form-row { flex-direction: column; } .partner-logo{display:none;} }
     .form-group { display: flex; flex-direction: column; gap: 8px; flex: 1; }
     .form-input { width: 100%; padding: 8px; font-size: 14px; color: #fff; background: transparent; border: 1px solid #999; border-radius: 8px; }
     .form-input::placeholder { color: #999; }
     .dropdown { position: relative; }
     .dropdown-button { width: 100%; padding: 8px; font-size: 14px; background: transparent; border: 1px solid #999; border-radius: 8px; text-align: left; cursor: pointer; }
     .dropdown-button.has-value { color: #fff; }
-    .dropdown-button::after {
-  content: "▼";
-  position: absolute;
-  right: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 12px;
-  color: #ffffff;
-  pointer-events: none;
-}
+    .dropdown-button::after { content: "▼"; position: absolute; right: 10px; top: 50%; transform: translateY(-50%); font-size: 12px; color: #ffffff; pointer-events: none; }
     .dropdown-button.placeholder { color: #999; }
     .dropdown-menu { list-style: none; margin: 4px 0 0; padding: 0; position: absolute; top: 100%; left: 0; background: #2b414f; border: 1px solid #999; border-radius: 8px; width: 100%; z-index: 1000; }
     .dropdown-menu li { padding: 8px; cursor: pointer; color: #fff; }
     .dropdown-menu li:hover { background: #3a5563; }
+    .dropdown-header { font-size: 12px; font-weight: 600; color: #c6b98b; padding: 8px; cursor: pointer; }
+    .dropdown-header {
+  font-size: 12px;
+  font-weight: 600;
+  color: #c6b98b;
+  padding: 8px;
+  cursor: default;
+  background: transparent !important;  /* Ensure no background */
+}
+
+.dropdown-header:hover {
+  background: transparent !important;  /* Prevent hover */
+  pointer-events: none;               /* Disable click/hover */
+}
+
     .hidden { display: none; }
     .field-label { font-size: 14px; color: #cddbe4; }
     .checkbox-container { display: flex; gap: 8px; align-items: center; }
@@ -84,6 +79,7 @@
           <div class="form-title"><h1>Create Your Profile</h1></div>
 
           <form class="form-sections" id="profileForm">
+            <!-- Name -->
             <div>
               <label class="section-label">Your Name</label>
               <div class="form-row">
@@ -92,6 +88,7 @@
               </div>
             </div>
 
+            <!-- Contact -->
             <div>
               <label class="section-label">Contact Details</label>
               <div class="form-row">
@@ -100,6 +97,7 @@
               </div>
             </div>
 
+            <!-- Role & Specialty -->
             <div>
               <label class="section-label">Select Primary Role:</label>
               <div class="form-row">
@@ -124,24 +122,26 @@
               </div>
             </div>
 
+            <!-- Location -->
             <div>
               <label class="section-label">Select Location</label>
               <div class="form-row">
                 <div class="form-group">
                   <div class="dropdown">
-                    <button type="button" class="dropdown-button placeholder" data-dropdown="location1">Select</button>
+                    <button type="button" class="dropdown-button placeholder" data-dropdown="location1">Select Country</button>
                     <ul class="dropdown-menu hidden"></ul>
                   </div>
                 </div>
                 <div class="form-group">
                   <div class="dropdown">
-                    <button type="button" class="dropdown-button placeholder" data-dropdown="location2">Select</button>
+                    <button type="button" class="dropdown-button placeholder" data-dropdown="location2">Select State</button>
                     <ul class="dropdown-menu hidden"></ul>
                   </div>
                 </div>
               </div>
             </div>
 
+            <!-- Submit -->
             <div class="button-row">
               <button type="button" class="btn btn-cancel" onclick="cancelForm()">Cancel</button>
               <button type="submit" class="btn btn-submit">Submit</button>
@@ -173,43 +173,74 @@
       }
     }
 
-    // Dropdown functionality
+    // Dropdown with groups
     document.querySelectorAll('.dropdown').forEach(dropdown => {
       const button = dropdown.querySelector('.dropdown-button');
       const menu = dropdown.querySelector('.dropdown-menu');
 
-      button.addEventListener('click', function () {
-        const type = this.getAttribute('data-dropdown');
+      button.addEventListener('click', function(e) {
+        e.stopPropagation(); // prevent outside click
         menu.classList.toggle('hidden');
-        menu.innerHTML = "";
+        menu.innerHTML = '';
+        const type = this.getAttribute('data-dropdown');
 
         let options = [];
         switch (type) {
-          case 'role': options = ['Specialist (Partner)', 'General Practitioner', 'Consultant', 'Resident']; break;
-          case 'specialty': options = ['Cardiology', 'Neurology', 'Orthopedics', 'Pediatrics', 'Dermatology']; break;
-          case 'location1': options = ['United States', 'Canada', 'United Kingdom', 'Australia']; break;
-          case 'location2': options = ['New York', 'California', 'Texas', 'Florida']; break;
+          case 'role':
+            options = [
+              { group: 'Specialist', items: ['Owner', 'Partner', 'Associate'] },
+              { group: 'Others', items: ['Hygienist', 'Practice Success Director', 'Strategic Growth Partner', 'Treatment Consultant', 'Custom Role'] }
+            ];
+            break;
+          case 'specialty':
+            options = [{ items: ['Periodontist', 'Endodontist', 'Oral Surgeon', 'Prosthodontist'] }];
+            break;
+          case 'location1':
+            options = [{ items: ['United States', 'Canada', 'United Kingdom', 'Australia'] }];
+            break;
+          case 'location2':
+            options = [{ items: ['New York', 'California', 'Texas', 'Florida'] }];
+            break;
         }
 
-        options.forEach(option => {
-          const li = document.createElement('li');
-          li.textContent = option;
-          li.addEventListener('click', () => {
-            button.textContent = option;
-            button.classList.remove('placeholder');
-            button.classList.add('has-value');
-            menu.classList.add('hidden');
-          });
-          menu.appendChild(li);
+        options.forEach(group => {
+          if (group.group) {
+            const header = document.createElement('li');
+            header.textContent = group.group;
+            header.classList.add('dropdown-header');
+            menu.appendChild(header);
+
+            group.items.forEach(item => {
+              const li = document.createElement('li');
+              li.textContent = item;
+              li.addEventListener('click', () => {
+                button.textContent = item;
+                button.classList.remove('placeholder');
+                button.classList.add('has-value');
+                menu.classList.add('hidden');
+              });
+              menu.appendChild(li);
+            });
+          } else {
+            group.items.forEach(item => {
+              const li = document.createElement('li');
+              li.textContent = item;
+              li.addEventListener('click', () => {
+                button.textContent = item;
+                button.classList.remove('placeholder');
+                button.classList.add('has-value');
+                menu.classList.add('hidden');
+              });
+              menu.appendChild(li);
+            });
+          }
         });
       });
     });
 
-    // Close dropdown when clicking outside
-    document.addEventListener('click', function (e) {
-      document.querySelectorAll('.dropdown-menu').forEach(menu => {
-        if (!menu.parentElement.contains(e.target)) menu.classList.add('hidden');
-      });
+    // Close dropdown on outside click
+    document.addEventListener('click', function () {
+      document.querySelectorAll('.dropdown-menu').forEach(menu => menu.classList.add('hidden'));
     });
   </script>
 </body>
